@@ -5,7 +5,6 @@ import sys, getopt, requests, cgi
 MA3_DOWNLOAD_URL = "https://ssl.gstatic.com/dictionary/static/sounds/oxford/%s--_gb_1.mp3"
 buffer_size = 1024
 
-
 def main(argv):
    vocabulary = ''
 
