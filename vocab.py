@@ -41,7 +41,7 @@ def downloadMp3(vocab, output):
 	default_filename = "%s.mp3" % vocab
 	if output:
 		makedirIfNeeded(output)
-		default_filename = output + "/" + default_filename
+		default_filename = output + os.path.sep + default_filename
 	
 	if content_disposition:
 		value, params = cgi.parse_header(content_disposition)
