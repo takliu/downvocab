@@ -1,6 +1,6 @@
 #!/usr/bin/python
 from tqdm import tqdm
-import sys, getopt, requests, cgi, os
+import sys, getopt, requests, cgi, os, csv
 
 MA3_DOWNLOAD_URL = "https://ssl.gstatic.com/dictionary/static/sounds/oxford/%s--_gb_1.mp3"
 buffer_size = 1024
@@ -8,9 +8,10 @@ buffer_size = 1024
 def main(argv):
 	vocabulary = ''
 	output = ''
+	csv = ''
 
 	try:
-		opts, args = getopt.getopt(argv, "hd:o:", ["vocab=", "ofile="])
+		opts, args = getopt.getopt(argv, "hd:o:c:", ["vocab=", "ofile=", "csv="])
 	except getopt.GetoptError:
 		showInstruction()
 	for opt, arg in opts:
@@ -20,8 +21,13 @@ def main(argv):
 		 	vocabulary = arg
 		elif opt in ("-o", "--ofile"):
 			output = arg
+		elif opt in ("-c", "--csv"):
+			csv = arg
 
-	downloadMp3(vocabulary, output)
+	if csv:
+		downloadMp3FromCSV(csv, output)
+	else:
+		downloadMp3(vocabulary, output)
 
 def downloadMp3(vocab, output):
 	if not vocab:
@@ -48,6 +54,25 @@ def downloadMp3(vocab, output):
 		for data in progress.iterable:
 			f.write(data)
 			progress.update(len(data))
+
+def downloadMp3FromCSV(input, output):
+	vocabList = getVocabularyList(input)
+
+	for vocab in vocabList:
+		downloadMp3(vocab, output)
+
+def getVocabularyList(csvPath):
+	vocabList = []
+
+	with open(csvPath, newline='') as csvFile:
+		csvFile = csv.reader(csvFile)
+		rows = list(csvFile)
+
+		for row in rows:
+			for item in row:
+				vocabList.append(item)
+
+	return vocabList
 
 def makedirIfNeeded(output):
 	if not os.path.isdir(output):
