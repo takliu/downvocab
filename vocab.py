@@ -1,11 +1,13 @@
-#!/usr/bin/python  
+#!/usr/bin/python
+import asyncio
+import aiohttp
 from tqdm import tqdm  
 import sys, getopt, requests, cgi, os, csv  
   
 MA3_DOWNLOAD_URL = "https://ssl.gstatic.com/dictionary/static/sounds/oxford/%s--_gb_1.mp3"  
 buffer_size = 1024  
   
-def main(argv):  
+async def main(argv):  
 	vocabulary = ''  
 	output = ''  
 	csv = ''  
@@ -25,46 +27,51 @@ def main(argv):
 			csv = arg  
   
 	if csv:  
-		downloadMp3FromCSV(csv, output)  
+		await downloadMp3FromCSV(csv, output)  
 	else:  
 		downloadMp3(vocabulary, output)  
   
-def downloadMp3(vocab, output):  
+async def downloadMp3(vocab, output):  
 	if not vocab:  
 		showInstruction()  
   
-	downloadURL = MA3_DOWNLOAD_URL % vocab  
-	response = requests.get(downloadURL, stream=True)
+	downloadURL = MA3_DOWNLOAD_URL % vocab
+	async with aiohttp.ClientSession() as session:  
+		async with session.get(downloadURL) as response:
 
-	if response.status_code != 200:
-		print('Sorry %s is not exist in database.' % vocab)
-		exit()
-
-	file_size = int(response.headers.get("Content-Length", 0))  
-	content_disposition = response.headers.get("Content-Disposition")  
-  
-	default_filename = "%s.mp3" % vocab  
-	if output:  
-		makedirIfNeeded(output)  
-		default_filename = output + "/" + default_filename  
+			try:
+				file_size = int(response.headers.get("Content-Length", 0))  
+				content_disposition = response.headers.get("Content-Disposition")  
 	  
-	if content_disposition:  
-		value, params = cgi.parse_header(content_disposition)  
-		filename = params.get("filename", default_filename)  
-	else:  
-		filename = default_filename  
+				default_filename = "%s.mp3" % vocab  
+				if output:  
+					makedirIfNeeded(output)  
+					default_filename = output + "/" + default_filename  
+		  
+				if content_disposition:  
+					value, params = cgi.parse_header(content_disposition)  
+					filename = params.get("filename", default_filename)  
+				else:  
+					filename = default_filename  
+	  
+				progress = tqdm(desc=f"Downloading {filename}", total=file_size, unit="", unit_scale=True, unit_divisor=1024)  
+				with open(filename, "wb") as f:  
+					async for chunk in response.content.iter_chunked(buffer_size): 
+						f.write(chunk)  
+						progress.update(len(chunk))
+
+			except NameError as erroe:
+				print('Sorry %s is not exist in database.' % vocab)
+				print(error.__class__.__name__)
+				exit()
+
+	  
   
-	progress = tqdm(response.iter_content(buffer_size), f"Downloading {filename}", total=file_size, unit="B", unit_scale=True, unit_divisor=1024)  
-	with open(filename, "wb") as f:  
-		for data in progress.iterable:  
-			f.write(data)  
-			progress.update(len(data))  
-  
-def downloadMp3FromCSV(input, output):  
+async def downloadMp3FromCSV(input, output):  
 	vocabList = getVocabularyList(input)  
   
 	for vocab in vocabList:  
-		downloadMp3(vocab, output)  
+		await downloadMp3(vocab, output)  
   
 def getVocabularyList(csvPath):  
 	vocabList = []  
@@ -87,5 +94,6 @@ def showInstruction():
 	print('vocab.py [-c <csv_file_path>] -d <vocabulary> -o <output_directory>')  
 	sys.exit()  
   
-if __name__ == "__main__":  
-	main(sys.argv[1:])
+if __name__ == "__main__":
+	asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())  
+	asyncio.run(main(sys.argv[1:]))
