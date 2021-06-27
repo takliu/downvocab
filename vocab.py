@@ -34,7 +34,12 @@ def downloadMp3(vocab, output):
 		showInstruction()  
   
 	downloadURL = MA3_DOWNLOAD_URL % vocab  
-	response = requests.get(downloadURL, stream=True)  
+	response = requests.get(downloadURL, stream=True)
+
+	if response.status_code != 200:
+		print('Sorry %s is not exist in database.' % vocab)
+		exit()
+
 	file_size = int(response.headers.get("Content-Length", 0))  
 	content_disposition = response.headers.get("Content-Disposition")  
   
