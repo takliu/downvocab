@@ -37,29 +37,28 @@ def downloadMp3(vocab, output):
 	response = requests.get(downloadURL, stream=True)
 
 	if response.status_code != 200:
-		print('Sorry %s is not exist in database.' % vocab)
-		exit()
-
-	file_size = int(response.headers.get("Content-Length", 0))  
-	content_disposition = response.headers.get("Content-Disposition")  
-  
-	default_filename = "%s.mp3" % vocab  
-	if output:  
-		makedirIfNeeded(output)  
-		default_filename = output + "/" + default_filename  
+		print('\nSorry %s is not exist in database.' % vocab)
+	else:
+		file_size = int(response.headers.get("Content-Length", 0))  
+		content_disposition = response.headers.get("Content-Disposition")  
 	  
-	if content_disposition:  
-		value, params = cgi.parse_header(content_disposition)  
-		filename = params.get("filename", default_filename)  
-	else:  
-		filename = default_filename  
-  
-	progress = tqdm(response.iter_content(buffer_size), f"Downloading {filename}", total=file_size, unit="B", unit_scale=True, unit_divisor=1024)  
-	with open(filename, "wb") as f:  
-		for data in progress.iterable:  
-			f.write(data)  
-			progress.update(len(data))  
-  
+		default_filename = "%s.mp3" % vocab  
+		if output:  
+			makedirIfNeeded(output)  
+			default_filename = output + "/" + default_filename  
+		  
+		if content_disposition:  
+			value, params = cgi.parse_header(content_disposition)  
+			filename = params.get("filename", default_filename)  
+		else:  
+			filename = default_filename  
+	  
+		progress = tqdm(response.iter_content(buffer_size), f"Downloading {filename}", total=file_size, unit="B", unit_scale=True, unit_divisor=1024, position=0, leave=True)  
+		with open(filename, "wb") as f:  
+			for data in progress.iterable:  
+				f.write(data)
+				progress.update(len(data))  
+	  
 def downloadMp3FromCSV(input, output):  
 	vocabList = getVocabularyList(input)  
   
