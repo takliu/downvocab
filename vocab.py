@@ -6,7 +6,7 @@ def main(argv):
 	vocabulary = ''  
 	output = ''  
 	csv = ''  
-  
+  	
 	try:  
 		opts, args = getopt.getopt(argv, "hd:o:c:", ["vocab=", "ofile=", "csv="])  
 	except getopt.GetoptError:  
@@ -44,7 +44,7 @@ def downloadMp3FromCSV(input, output):
   
 	for vocab in vocabList:  
 		downloadMp3(vocab, output)  
-  
+#This is a comment 2 testing  
 def getVocabularyList(csvPath):  
 	vocabList = []
   
@@ -58,7 +58,8 @@ def getVocabularyList(csvPath):
   
 	return vocabList  
 
-#This is a comment 2 testing
+
+#This is a testing comment 1
 def makedirIfNeeded(output):  
 	if not os.path.isdir(output):  
 		os.makedirs(output)		  
