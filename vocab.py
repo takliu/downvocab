@@ -58,6 +58,7 @@ def getVocabularyList(csvPath):
   
 	return vocabList  
   
+# comment 1
 def makedirIfNeeded(output):  
 	if not os.path.isdir(output):  
 		os.makedirs(output)		  
