@@ -30,7 +30,7 @@ setup(
     install_requires=["gTTS"],
     entry_points={
         "console_scripts": [
-            "downvocab.__main__:main",
+            "downvocab=downvocab.__main__:main",
         ]
     },
 )
