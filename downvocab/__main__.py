@@ -2,7 +2,10 @@
 from gtts import gTTS  
 import sys, getopt, requests, cgi, os, csv  
   
-def main(argv):  
+def main():  
+
+	argv = sys.argv[1:]
+
 	vocabulary = ''  
 	output = ''  
 	csv = ''  
@@ -67,4 +70,4 @@ def showInstruction():
 	sys.exit()  
   
 if __name__ == "__main__":  
-	main(sys.argv[1:])
+	main()
