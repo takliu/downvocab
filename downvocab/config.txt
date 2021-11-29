@@ -1,0 +1,4 @@
+# config.txt
+
+[feed]
+url = https://github.com/takliu/downvocab

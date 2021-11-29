@@ -63,7 +63,7 @@ def makedirIfNeeded(output):
 		os.makedirs(output)		  
   
 def showInstruction():  
-	print('vocab.py [-c <csv_file_path> || -d <vocabulary>] -o <output_directory>')  
+	print('[-c <csv_file_path> || -d <vocabulary>] -o <output_directory>')  
 	sys.exit()  
   
 if __name__ == "__main__":  
