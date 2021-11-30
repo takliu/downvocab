@@ -1,0 +1,10 @@
+README.md
+setup.py
+downvocab/__init__.py
+downvocab/__main__.py
+downvocab.egg-info/PKG-INFO
+downvocab.egg-info/SOURCES.txt
+downvocab.egg-info/dependency_links.txt
+downvocab.egg-info/entry_points.txt
+downvocab.egg-info/requires.txt
+downvocab.egg-info/top_level.txt
